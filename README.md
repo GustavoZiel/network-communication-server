@@ -7,6 +7,8 @@
 
 ## Descrição
 
+![gif](./ezgif.com-video-to-gif-converter(2).gif)
+
 Este projeto foi desenvolvido como parte do trabalho da disciplina de Redes de Computadores.
 
 A aplicação criada permite a **comunicação entre dois ou mais processos distintos**, que podem estar em **execução na mesma máquina ou em máquinas diferentes** conectadas em rede.
