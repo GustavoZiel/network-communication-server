@@ -9,9 +9,6 @@
 #include <sys/time.h>
 #include <unistd.h>
 
-#define PORT 8080
-#define MAX_CLIENTS 10
-#define AWAIT_TIME 20
 typedef struct client {
     int id;
     char name[20];
@@ -20,7 +17,7 @@ typedef struct client {
     pthread_t thread;
 } client_t;
 
-client_t clients[MAX_CLIENTS];
+client_t *clients = NULL;
 int qtt_clients = 0;
 
 int create_socket() {
@@ -44,10 +41,10 @@ void config_socket(int server_fd) {
     printf(" => Socket options set with success\n");
 }
 
-void set_address(struct sockaddr_in *address) {
+void set_address(struct sockaddr_in *address, int port) {
     (*address).sin_family = AF_INET;
     (*address).sin_addr.s_addr = INADDR_ANY;
-    (*address).sin_port = htons(PORT);
+    (*address).sin_port = htons(port);
 }
 
 void start_socket(int server_fd, struct sockaddr_in address) {
@@ -55,7 +52,7 @@ void start_socket(int server_fd, struct sockaddr_in address) {
         perror("[Error] Socket could not be binded");
         exit(EXIT_FAILURE);
     }
-    printf(" => Socket binded to all interfaces and to port [%d]\n", PORT);
+    printf(" => Socket binded to all interfaces and to port [%d]\n", ntohs(address.sin_port));
 
     int queue_size = 3;
     if (listen(server_fd, queue_size) < 0) {
@@ -79,15 +76,15 @@ void *send_n_read(int id) {
 
     while (memset(buffer, 0, sizeof(buffer)) && read(clients[id].socket, buffer, 500) != 0) {
         if (!strcmp("/q", buffer)) {
-            snprintf(msg, sizeof(msg), "[%s] saiu do chat.", clients[id].name);
+            snprintf(msg, sizeof(msg), "[%s] left chat.\n", clients[id].name);
             clients[id].active = false;
             broadcast_msg(msg, clients[id].id);
-            printf("%s\n", msg);
+            printf("%s", msg);
             break;
         } else {
-            snprintf(msg, sizeof(msg), "[%s]: %s", clients[id].name, clients[id].id, buffer);
+            snprintf(msg, sizeof(msg), "[%s]: %s\n", clients[id].name, buffer);
             broadcast_msg(msg, clients[id].id);
-            printf("%s\n", msg);
+            printf("%s", msg);
         }
     }
     close(clients[id].socket);
@@ -98,7 +95,7 @@ void register_client(int id) {
     char *welcome_msg = "\n===== WELCOME TO THE CHAT GROUP =====\n";
     send(clients[id].socket, welcome_msg, strlen(welcome_msg), 0);
 
-    char *register_msg = "What is your name ?";
+    char *register_msg = "What is your name ?\n";
     send(clients[id].socket, register_msg, strlen(register_msg), 0);
 
     // Getting client name
@@ -109,7 +106,7 @@ void register_client(int id) {
     char *end_msg = "=====================================\n\n";
     send(clients[id].socket, end_msg, strlen(end_msg), 0);
 
-    char *chat_start = "Chat:\n";
+    char *chat_start = "Chat:\n\n";
     send(clients[id].socket, chat_start, strlen(chat_start), 0);
 
     clients[id].active = true;
@@ -131,9 +128,15 @@ void get_info(int client) {
 }
 
 void add_client(int client_socket) {
-    clients[qtt_clients].id = qtt_clients;
-    clients[qtt_clients].socket = client_socket;
-    qtt_clients += 1;
+    clients = (client_t *)realloc(clients, (++qtt_clients)*sizeof(client_t));
+    if (clients == NULL) {
+        perror("Failed to allocate memory for clients");
+        free(clients);
+        exit(1);
+    }
+    clients[qtt_clients-1].id = qtt_clients-1;
+    clients[qtt_clients-1].socket = client_socket;
+    clients[qtt_clients-1].active = false;
 }
 
 void *handle_client(void *args) {
@@ -144,18 +147,18 @@ void *handle_client(void *args) {
     return NULL;
 }
 
-void handle_server(int server_fd, struct sockaddr_in address) {
+void handle_server(int server_fd, struct sockaddr_in address, int await_time) {
     fd_set readfds;
     int client_socket, id_client;
     socklen_t addrlen = sizeof(address);
 
     // Creating timeout object
     struct timeval *timeout = NULL;
-    if (AWAIT_TIME != 0) {
+    if (await_time > 0) {
         timeout = malloc(sizeof(struct timeval));
-        timeout->tv_sec = AWAIT_TIME;
+        timeout->tv_sec = await_time;
         timeout->tv_usec = 0;
-        printf("\n==== The socket will wait %ds for connections ====\n", AWAIT_TIME);
+        printf("\n==== The socket will wait %ds for connections ====\n", await_time);
 
     } else {
         printf("\n==== The socket is wainting connections ====\n");
@@ -212,25 +215,34 @@ void handle_server(int server_fd, struct sockaddr_in address) {
     }
 }
 
-int main(int argc, char const *argv[]) {
+int main(int argc, char *argv[]) {
+    if (argc != 3) {
+        fprintf(stderr, "Usage: %s <PORT> <TIMEOUT>\n", argv[0]);
+        return 1;
+    }
+
+    int port = atoi(argv[1]);
+    int timeout = atoi(argv[2]);
+
     int server_fd;
     server_fd = create_socket();
     config_socket(server_fd);
 
     struct sockaddr_in address;
-    set_address(&address);
+    set_address(&address, port);
     start_socket(server_fd, address);
 
     printf("\n=================================\n");
     printf("\tThe socket is on\t\n");
     printf("=================================\n");
 
-    handle_server(server_fd, address);
+    handle_server(server_fd, address, timeout);
 
     printf("\n=================================\n");
     printf("\tThe socket is off\t\n");
     printf("=================================\n");
 
+    free(clients);
     // closing the listening socket
     close(server_fd);
 

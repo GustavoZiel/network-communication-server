@@ -7,9 +7,6 @@
 #include <sys/socket.h>
 #include <unistd.h>
 
-#define IP_ADDRESS "192.168.15.7"
-#define PORT 8080
-
 // Variável de controle para indicar se a thread deve continuar executando
 int running = 1;
 
@@ -28,11 +25,11 @@ int create_socket() {
     return client_fd;
 }
 
-void config_socket(struct sockaddr_in* serv_addr) {
+void config_socket(struct sockaddr_in* serv_addr, char* ip_address, int port) {
     serv_addr->sin_family = AF_INET;
-    serv_addr->sin_port = htons(PORT);
+    serv_addr->sin_port = htons(port);
 
-    if (inet_pton(AF_INET, IP_ADDRESS, &serv_addr->sin_addr) <= 0) {
+    if (inet_pton(AF_INET, ip_address, &serv_addr->sin_addr) <= 0) {
         printf("\n [Error] Invalid address / Address not supported \n");
         exit(EXIT_FAILURE);
     }
@@ -84,32 +81,54 @@ void* write_server(void* args) {
 
 void* read_server(void* args) {
     int client_fd = *(int*)args;
-    // Tamanho da linha que ele recebe do servidor
-    char buffer[1024];
+    char buffer[1024];      // Buffer temporário para armazenar dados recebidos
+    char message[1024];     // Buffer para armazenar a mensagem completa até encontrar '\n'
+    int message_len = 0;    // Comprimento atual da mensagem
 
     while (1) {
         pthread_mutex_lock(&mutex_running);
         if (running == 0) {
+            pthread_mutex_unlock(&mutex_running);
             break;
         }
         pthread_mutex_unlock(&mutex_running);
 
         // Cliente recebe mensagens do servidor
         memset(buffer, 0, sizeof(buffer));
-        if (read(client_fd, buffer, 1024) > 0) {
-            printf("%s\n", buffer);
+        int bytes_read = read(client_fd, buffer, sizeof(buffer) - 1);
+        if (bytes_read > 0) {
+            for (int i = 0; i < bytes_read; ++i) {
+                // Armazena o byte no buffer de mensagem
+                message[message_len++] = buffer[i];
+
+                // Se encontrar um '\n', imprime a mensagem e reseta o comprimento
+                if (buffer[i] == '\n') {
+                    message[message_len] = '\0';  // Null-terminate a string
+                    printf("%s", message);        // Imprime a mensagem
+                    message_len = 0;              // Reseta o comprimento para a próxima mensagem
+                }
+            }
         }
     }
 
     return NULL;
 }
 
-int main(int argc, char const* argv[]) {
-    int status, client_fd;
+int main(int argc, char *argv[]) {
+    if (argc != 3) {
+        fprintf(stderr, "Usage: %s <IP_ADDRESS> <PORT>\n", argv[0]);
+        return 1;
+    }
+
+    char *ip_address = argv[1];
+    int port = atoi(argv[2]);
+
+
+    int client_fd;
     struct sockaddr_in serv_addr;
 
     client_fd = create_socket();
-    config_socket(&serv_addr);
+    config_socket(&serv_addr, ip_address, port);
 
     client_connect(client_fd, serv_addr);
 
