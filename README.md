@@ -1,13 +1,13 @@
 # Aplicação de Comunicação via Sockets
 
-## Desenvolvedores:
+![gif](./attachments/2clients.gif)
+
+## Desenvolvedores
 
 - Gustavo Gabriel Ribeiro
-- [Outros Membros do Grupo, se houver]
+-
 
 ## Descrição
-
-![gif](./ezgif.com-video-to-gif-converter(2).gif)
 
 Este projeto foi desenvolvido como parte do trabalho da disciplina de Redes de Computadores.
 
@@ -98,13 +98,13 @@ make ARGS="<PORT> <TIMEOUT>" runServer
 
 #### PORT
 
-- É necessário especificar a PORT em que o servidor estará ouvindo
+- É necessário especificar a PORT em que o servidor estará ouvindo.
 
 #### TIMEOUT
 
-- É necessário especificar quanto tempo o servidor permanecerá aberto aguardando por conexões
-- `TIMEOUT` é medido em segundos
-- Caso `TIMEOUT <= 0`, o servidor ficará aguardando por conexões indefinidamente (até que todos os clientes conectados saiam)
+- É necessário especificar quanto tempo o servidor permanecerá aberto aguardando por conexões.
+- `TIMEOUT` é medido em segundos.
+- Caso `TIMEOUT <= 0`, o servidor ficará aguardando por conexões indefinidamente (até que todos os clientes conectados saiam).
 
 #### Exemplo
 
@@ -114,7 +114,7 @@ make ARGS="8080 10" runServer
 
 Nesse exemplo, o servidor aguardará por conexões na porta 8080 durante 10 segundos.
 
-![alt text](image-1.png)
+![runServer](./attachments/image-1.png)
 
 ### Cliente
 
@@ -122,36 +122,38 @@ Nesse exemplo, o servidor aguardará por conexões na porta 8080 durante 10 segu
 make ARGS="<IP_ADDRESS> <PORT>" runClient
 ```
 
-make ARGS="192.168.15.6 8080" runClient
-
 #### IP e PORT
 
-- É necessário especificar o IP e PORT em que os clientes tentarão se conectar
-- Caso esteja executando o cliente e o servidor na mesma máquina, utilize O comando `ip -f inet addr show` para o obter o ip inet da máquina (**atenção, localhost 127.0.0.1 não é válido)**
+- É necessário especificar o IP e PORT em que os clientes tentarão se conectar.
+- Caso esteja executando o cliente e o servidor na mesma máquina, utilize o comando `ip -f inet addr show` para obter o IP inet da máquina. **Atenção: o localhost (127.0.0.1) não é válido**.
 
-![alt text](image-2.png)
+![ipaddr](./attachments/image-2.png)
+
+O IP que os clientes devem usar para se conectarem nessa máquina é, portanto, 192.168.15.6.
 
 #### Exemplo
 
-![alt text](image-3.png)
+```bash
+make ARGS="192.168.15.6 8080" runClient
+```
 
-Ocorre um erro nesse caso, pois o servidor não está a escuta, dessa forma, o cliente não consegue se conectar.
+![runClient](./attachments/image-3.png)
+
+Um erro ocorre, visto que o servidor não foi iniciado e dessa forma o cliente não consegue se conectar.
 
 ## Como Utilizar
 
-Aqui está o trecho corrigido:
-
-Após seguir os passos das seções de [compilação](#como-compilar) e [configuração](#como-configurar), você terá, em um terminal, o servidor aguardando por conexões, e em outros, clientes se conectando.
+Após seguir os passos das seções de [compilação](./attachments/#como-compilar) e [configuração](./attachments/#como-configurar), você terá, em um terminal, o servidor aguardando por conexões, e em outros, clientes se conectando.
 
 ### Exemplos de Uso
 
 #### 1 Cliente e 1 Servidor
 
-![alt text](image-5.png)
+![1cliente](./attachments/image-5.png)
 
 - Compreendendo o exemplo:
   1. O servidor é iniciado e fica escutando na porta 8080 por 10 segundos.
-  2. O cliente tenta se conectar ao IP 192.168.15.6 na porta 80.
+  2. O cliente tenta se conectar ao IP 192.168.15.6 na porta 8080.
   3. O servidor aceita a nova conexão e imprime informações sobre o cliente: IP do cliente e porta pela qual o cliente realizou a conexão.
   4. O cliente é introduzido ao chat e deve informar seu nome.
   5. Após o servidor receber o nome do cliente, o chat se inicia de fato.
@@ -161,11 +163,27 @@ Após seguir os passos das seções de [compilação](#como-compilar) e [configu
   9. O servidor recebe a notificação de que o cliente se desconectou.
   10. Como o servidor não está mais esperando por clientes e todos os clientes se desconectaram, ele se encerra.
 
-#### N Clientes e 1 Servidor
+#### 2 Clientes e 1 Servidor
 
-![alt text](image-6.png)
-![alt text](image-7.png)
+![gif2clientes](./attachments/./2clients.gif)
+
+- Compreendendo o exemplo:
+  1. O servidor é iniciado e fica escutando na porta 8080 por 10 segundos.
+  2. O cliente 1 tenta se conectar ao IP 192.168.15.6 na porta 8080.
+  3. O servidor aceita a nova conexão e imprime informações sobre o cliente 1: IP do cliente e porta pela qual o cliente realizou a conexão.
+  4. O cliente 1 é introduzido ao chat e deve informar seu nome.
+  5. Após o servidor receber o nome do cliente 1, o chat se inicia de fato.
+  6. O mesmo ocorre para o cliente 2.
+  7. O tempo de espera por novas conexões do servidor se encerra.
+  8. As mensagens enviadas pelo cliente 1 são visíveis para o servidor e marcadas pelo seu nome; elas também são enviadas para o cliente 2.
+  9. Os clientes recebem as mensagens uns dos outros, e o servidor recebe todas as mensagens.
+  10. O cliente 1 se desconecta.
+  11. O servidor notifica todos os outros clientes ativos que o cliente 1 se desconectou.
+  12. O cliente 2 se desconecta.
+  13. Como o servidor não está mais esperando por clientes e todos os clientes se desconectaram, ele se encerra.
 
 ## Considerações Finais
 
-Este projeto foi desenvolvido com o intuito de entender e implementar a comunicação via sockets em C. Sinta-se à vontade para modificar e expandir a funcionalidade do projeto conforme necessário.
+Este projeto foi desenvolvido com o intuito de compreender e implementar a comunicação via sockets. Foi possível aprofundar os conhecimentos em redes, reforçar a técnica de multithreading utilizando artifícios de Sistemas Operacionais, como semáforos, e aprimorar as habilidades de programação em C. 
+
+O desenvolvimento do projeto proporcionou uma experiência prática valiosa e consolidou conceitos teóricos importantes.
