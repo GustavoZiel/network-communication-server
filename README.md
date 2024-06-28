@@ -7,6 +7,31 @@
 - Gustavo Gabriel Ribeiro
 -
 
+## Índice
+
+- [Aplicação de Comunicação via Sockets](#aplicação-de-comunicação-via-sockets)
+  - [Desenvolvedores](#desenvolvedores)
+  - [Índice](#índice)
+  - [Descrição](#descrição)
+  - [Estrutura do Projeto](#estrutura-do-projeto)
+  - [Funcionalidades](#funcionalidades)
+  - [Requisitos](#requisitos)
+  - [Como Compilar](#como-compilar)
+  - [Como Configurar](#como-configurar)
+    - [Server](#server)
+      - [PORT](#port)
+      - [TIMEOUT](#timeout)
+      - [Exemplo](#exemplo)
+    - [Cliente](#cliente)
+      - [IP e PORT](#ip-e-port)
+      - [Exemplo](#exemplo-1)
+  - [Como Utilizar](#como-utilizar)
+    - [Exemplos de Uso](#exemplos-de-uso)
+      - [1 Cliente e 1 Servidor](#1-cliente-e-1-servidor)
+      - [2 Clientes e 1 Servidor](#2-clientes-e-1-servidor)
+  - [Considerações Finais](#considerações-finais)
+
+
 ## Descrição
 
 Este projeto foi desenvolvido como parte do trabalho da disciplina de Redes de Computadores.
