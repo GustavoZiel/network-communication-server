@@ -4,8 +4,9 @@
 
 ## Desenvolvedores
 
-- Gustavo Gabriel Ribeiro
--
+- Gustavo Gabriel Ribeiro 13672683
+- Artur De Vlieger Lima 13671574
+- Gabriel da Costa Merlin 12544420
 
 ## Índice
 
