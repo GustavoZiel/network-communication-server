@@ -31,7 +31,6 @@
       - [2 Clientes e 1 Servidor](#2-clientes-e-1-servidor)
   - [Considerações Finais](#considerações-finais)
 
-
 ## Descrição
 
 Este projeto foi desenvolvido como parte do trabalho da disciplina de Redes de Computadores.
@@ -73,7 +72,7 @@ Para compilar o projeto, siga os seguintes passos:
 git clone git@github.com:GustavoZiel/network-communication-server.git
 ```
 
-2. Navegue até os arquivos fonte do projeto: 
+2. Navegue até os arquivos fonte do projeto:
 
 ```bash
 cd src
@@ -87,7 +86,7 @@ cd src
    ```bash
    make ARGS="<PORT> <TIMEOUT>" runServer
    ```
-   
+
    - Em outro terminal, inicie o cliente:
 
    ```bash
@@ -209,6 +208,6 @@ Após seguir os passos das seções de [compilação](./attachments/#como-compil
 
 ## Considerações Finais
 
-Este projeto foi desenvolvido com o intuito de compreender e implementar a comunicação via sockets. Foi possível aprofundar os conhecimentos em redes, reforçar a técnica de multithreading utilizando artifícios de Sistemas Operacionais, como semáforos, e aprimorar as habilidades de programação em C. 
+Este projeto foi desenvolvido com o intuito de compreender e implementar a comunicação via sockets. Foi possível aprofundar os conhecimentos em redes, reforçar a técnica de multithreading utilizando artifícios de Sistemas Operacionais, como semáforos, e aprimorar as habilidades de programação em C.
 
 O desenvolvimento do projeto proporcionou uma experiência prática valiosa e consolidou conceitos teóricos importantes.
